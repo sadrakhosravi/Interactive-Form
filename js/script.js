@@ -139,7 +139,7 @@ const formEvaluation = function () {
   const regEx = {
     name: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
     email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/,
-    ccnumber: /^[0-9]{13,16}$/,
+    ccnumber: /^(\d{13,16})$/,
     cvv: /^[0-9]{3}$/,
     zipcode: /^[0-9]{5}$/,
   };
@@ -189,7 +189,7 @@ const formEvaluation = function () {
   };
   const ccRealTimeEvaluation = function () {
     creditCardNum.addEventListener('input', e => {
-      const ccNumber = parseInt(creditCardNum.value);
+      const ccNumber = creditCardNum.value;
       isFieldValid(regEx.ccnumber, ccNumber, creditCardNum, e);
     });
   };
@@ -200,9 +200,9 @@ const formEvaluation = function () {
   form.addEventListener('submit', e => {
     const nameInputVal = nameInput.value;
     const emailVal = email.value;
-    const ccNumber = parseInt(creditCardNum.value);
+    const ccNumber = creditCardNum.value;
     const zipcodeVal = zipCode.value;
-    const cvvNumber = parseInt(cvv.value);
+    const cvvNumber = cvv.value;
 
     isFieldValid(regEx.name, nameInputVal, nameInput, e);
     isFieldValid(regEx.email, emailVal, email, e);
