@@ -1,33 +1,72 @@
-const nameInput = document.querySelector('#name');
-const activities = document.querySelector('#activities');
-const paymentOption = document.querySelector('#payment');
-const activityCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+//Form Variable
+const form = document.querySelector('form');
 
-//Name input focus on document laod
+//Basic Info Variables
+const nameInput = document.querySelector('#name');
+const email = document.querySelector('#email');
+const jobRoleSelect = document.querySelector('#title');
+const otherJobRoleInput = document.querySelector('#other-job-role');
+const designSelect = document.querySelector('#design');
+const colorSelect = document.querySelector('#color');
+const colorSelectOptions = colorSelect.children;
+
+//Activities Variables
+const activities = document.querySelector('#activities');
+const activityCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+const activityPrice = document.querySelector('#activities-cost');
+
+//Payment Variables
+const paymentOption = document.querySelector('#payment');
+const paypal = document.querySelector('#paypal');
+const bitcoin = document.querySelector('#bitcoin');
+
+//Credit Card Variables
+const creditCard = document.querySelector('#credit-card');
+const creditCardNum = document.querySelector('#cc-num');
+const zipCode = document.querySelector('#zip');
+const cvv = document.querySelector('#cvv');
+
+/**
+ * Focuses on the name input on page load
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  nameInput.focus(); // focus on name when the page loads
+  nameInput.focus();
 });
 
-//Job Role select element functionality
-const jobRoleSelection = function () {
-  const jobRoleSelect = document.querySelector('#title');
-  const otherJobRoleInput = document.querySelector('#other-job-role');
+/**
+ * Hides the element passed to it - Helper function
+ * @param {Element} el - The element to hide
+ */
+const hideElement = function (el) {
+  el.style.display = 'none';
+};
 
-  otherJobRoleInput.style.display = 'none';
+/**
+ * Shows the element passed to it - Helper function
+ * @param {Element} el - The element to be shown
+ */
+const showElement = function (el) {
+  el.style.display = 'inherit';
+};
+
+/**
+ * Shows/hide other job role field based on the job select value
+ */
+const jobRoleSelection = function () {
+  hideElement(otherJobRoleInput);
   jobRoleSelect.addEventListener('change', e => {
     if (e.target.value === 'other') {
-      otherJobRoleInput.style.display = '';
+      showElement(otherJobRoleInput);
     } else {
-      otherJobRoleInput.style.display = 'none';
+      hideElement(otherJobRoleInput);
     }
   });
 };
 
-//T-shirt Info Section
+/**
+ * Based on user's selection of design select box, enables and displays t-shirt colors.
+ */
 const tShirtInfo = function () {
-  const designSelect = document.querySelector('#design');
-  const colorSelect = document.querySelector('#color');
-  const colorSelectOptions = colorSelect.children;
   colorSelect.disabled = true;
 
   designSelect.addEventListener('change', e => {
@@ -49,8 +88,10 @@ const tShirtInfo = function () {
   });
 };
 
+/**
+ * Calculates the total price of the selected activity and outputs it on the page.
+ */
 const registerActivity = function () {
-  const activityPrice = document.querySelector('#activities-cost');
   let totalPrice = 0;
 
   activities.addEventListener('change', e => {
@@ -66,75 +107,97 @@ const registerActivity = function () {
   });
 };
 
+/**
+ * Shows the selected payment option information on the page.
+ */
 const paymentMethod = function () {
-  const creditCard = document.querySelector('#credit-card');
-  const paypal = document.querySelector('#paypal');
-  const bitcoin = document.querySelector('#bitcoin');
-
-  paypal.style.display = 'none'; //Refactor
-  bitcoin.style.display = 'none'; //Refactor
-
-  paymentOption.children[1].setAttribute('selected', true);
-
-  const hidePaymentInfoContainer = function () {
-    paypal.style.display = 'none'; //Refactor
-    bitcoin.style.display = 'none'; //Refactor
-    creditCard.style.display = 'none';
+  /**
+   * Hides PayPal and Bitcoin payment containers.
+   */
+  const hidePayPalAndBitcoin = function () {
+    hideElement(paypal);
+    hideElement(bitcoin);
   };
 
+  paymentOption.children[1].setAttribute('selected', true); //Default option
+  hidePayPalAndBitcoin();
+  showElement(creditCard);
+
   paymentOption.addEventListener('change', e => {
-    hidePaymentInfoContainer();
+    hidePayPalAndBitcoin();
+    hideElement(creditCard);
     document.getElementById(e.target.value).style.display = '';
   });
 };
 
+/**
+ * Evaluates name, email, activities, and payment option fields and prevents submission
+ * if the fields were invalid.
+ */
 const formEvaluation = function () {
-  const email = document.querySelector('#email');
-  const creditCardNum = document.querySelector('#cc-num');
-  const zipCode = document.querySelector('#zip');
-  const cvv = document.querySelector('#cvv');
-  const form = document.querySelector('form');
-
+  //RegEx object used for field evaluation
   const regEx = {
     name: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
     email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/,
-    ccnumber: /^((4\d{3})|(5[1-5]\d{2})|(6011))-?\d{4}-?\d{4}-?\d{4}|3[4,7]\d{13}$/,
-    cvv: /^[0-9]{3,4}$/,
-    zipcode: /^((\d{5}-?\d{4})|(\d{5})|([A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d))$/,
+    ccnumber: /^[0-9]{13,16}$/,
+    cvv: /^[0-9]{3}$/,
+    zipcode: /^[0-9]{5}$/,
   };
 
+  /**
+   * Checks if the value entered in the required field is valid. If not displays and error. If valid, displays checkmark.
+   * @param {Object} regEx - Regex object to compare the value to
+   * @param {String/Number} inputVal - Input value
+   * @param {Element} inputEl - Input element
+   * @param {Object} event - Event object
+   */
   const isFieldValid = function (regEx, inputVal, inputEl, event) {
     if (!regEx.test(inputVal)) {
+      console.log(inputVal.parentNode);
       inputEl.parentNode.classList.add('not-valid');
       inputEl.parentNode.classList.remove('valid');
-      inputEl.parentNode.lastElementChild.style.display = 'inherit';
+      showElement(inputEl.parentNode.lastElementChild);
       event.preventDefault();
     } else {
       inputEl.parentNode.classList.remove('not-valid');
       inputEl.parentNode.classList.add('valid');
-      inputEl.parentNode.lastElementChild.style.display = 'none';
+      hideElement(inputEl.parentNode.lastElementChild);
     }
   };
 
-  const checkValidation = function (e) {
+  /**
+   * Checks if any activity is selected and prevents the form from submitting if no activity selected.
+   * @param {Object} e
+   */
+  const activitiesValidation = function (e) {
     let checked = 0;
     for (let i = 0; i < activityCheckboxes.length; i++) {
       if (activityCheckboxes[i].checked) {
         checked++;
       }
-      console.log(checked);
     }
 
     if (checked === 0) {
       activities.firstElementChild.classList.add('not-valid');
       activities.firstElementChild.classList.remove('valid');
+      showElement(activities.lastElementChild);
       e.preventDefault();
     } else {
       activities.firstElementChild.classList.remove('not-valid');
       activities.firstElementChild.classList.add('valid');
+      hideElement(activities.lastElementChild);
     }
   };
+  const ccRealTimeEvaluation = function () {
+    creditCardNum.addEventListener('input', e => {
+      const ccNumber = parseInt(creditCardNum.value);
+      isFieldValid(regEx.ccnumber, ccNumber, creditCardNum, e);
+    });
+  };
 
+  ccRealTimeEvaluation();
+
+  //On submit, evaluates the form.
   form.addEventListener('submit', e => {
     const nameInputVal = nameInput.value;
     const emailVal = email.value;
@@ -149,11 +212,14 @@ const formEvaluation = function () {
       isFieldValid(regEx.zipcode, zipcodeVal, zipCode, e);
       isFieldValid(regEx.cvv, cvvNumber, cvv, e);
     }
-    checkValidation(e);
+    activitiesValidation(e);
   });
 };
 
-const formAccessibility = function () {
+/**
+ * Adds a focus class when an activity is clicked on.
+ */
+const activitiesFocus = function () {
   for (let i = 0; i < activityCheckboxes.length; i++) {
     activityCheckboxes[i].addEventListener('focus', () => {
       activityCheckboxes[i].parentNode.classList.add('focus');
@@ -163,8 +229,6 @@ const formAccessibility = function () {
       activityCheckboxes[i].parentNode.classList.remove('focus');
     });
   }
-
-  console.log(activityCheckboxes);
 };
 
 //Function Calls
@@ -173,4 +237,4 @@ tShirtInfo();
 registerActivity();
 paymentMethod();
 formEvaluation();
-formAccessibility();
+activitiesFocus();
