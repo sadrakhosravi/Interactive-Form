@@ -153,7 +153,6 @@ const formEvaluation = function () {
    */
   const isFieldValid = function (regEx, inputVal, inputEl, event) {
     if (!regEx.test(inputVal)) {
-      console.log(inputVal.parentNode);
       inputEl.parentNode.classList.add('not-valid');
       inputEl.parentNode.classList.remove('valid');
       showElement(inputEl.parentNode.lastElementChild);
